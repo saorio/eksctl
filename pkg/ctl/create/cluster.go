@@ -1,7 +1,9 @@
 package create
 
 import (
+	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"os"
 	"strings"
 
@@ -9,6 +11,9 @@ import (
 	"github.com/pkg/errors"
 	"github.com/spf13/cobra"
 	"github.com/spf13/pflag"
+
+	_ "github.com/weaveworks/eksctl/pkg/apis/eksctl.io"
+
 	api "github.com/weaveworks/eksctl/pkg/apis/eksctl.io/v1alpha1"
 	"github.com/weaveworks/eksctl/pkg/ctl/cmdutils"
 	"github.com/weaveworks/eksctl/pkg/eks"
@@ -16,6 +21,8 @@ import (
 	"github.com/weaveworks/eksctl/pkg/utils"
 	"github.com/weaveworks/eksctl/pkg/utils/kubeconfig"
 	"github.com/weaveworks/eksctl/pkg/vpc"
+	"k8s.io/apimachinery/pkg/runtime"
+	"k8s.io/client-go/kubernetes/scheme"
 )
 
 var (
@@ -24,6 +31,8 @@ var (
 	autoKubeconfigPath bool
 	setContext         bool
 	availabilityZones  []string
+
+	configFile = ""
 
 	kopsClusterNameForVPC string
 	subnets               map[api.SubnetTopology]*[]string
@@ -56,6 +65,8 @@ func createClusterCmd(g *cmdutils.Grouping) *cobra.Command {
 		cmdutils.AddRegionFlag(fs, p)
 		fs.StringSliceVar(&availabilityZones, "zones", nil, "(auto-select if unspecified)")
 		fs.StringVar(&cfg.Metadata.Version, "version", api.LatestVersion, fmt.Sprintf("Kubernetes version (valid options: %s)", strings.Join(api.SupportedVersions(), ",")))
+
+		fs.StringVarP(&configFile, "config-file", "f", "", "read configuration from a file")
 	})
 
 	group.InFlagSet("Initial nodegroup", func(fs *pflag.FlagSet) {
@@ -94,6 +105,27 @@ func createClusterCmd(g *cmdutils.Grouping) *cobra.Command {
 func doCreateCluster(p *api.ProviderConfig, cfg *api.ClusterConfig, ng *api.NodeGroup, nameArg string) error {
 	meta := cfg.Metadata
 	ctl := eks.New(p, cfg)
+
+	if configFile != "" {
+		data, err := ioutil.ReadFile(configFile)
+		if err != nil {
+			return err
+		}
+
+		if err := api.AddToScheme(scheme.Scheme); err != nil {
+			return err
+		}
+
+		obj, err := runtime.Decode(scheme.Codecs.UniversalDeserializer(), data)
+		if err != nil {
+			return err
+		}
+
+		js, _ := json.MarshalIndent(obj.(*api.ClusterConfig), "", "    ")
+		fmt.Println(string(js))
+
+		return nil
+	}
 
 	if !ctl.IsSupportedRegion() {
 		return cmdutils.ErrUnsupportedRegion(p)
