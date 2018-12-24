@@ -46,8 +46,8 @@ func createClusterCmd(g *cmdutils.Grouping) *cobra.Command {
 	cmd := &cobra.Command{
 		Use:   "cluster",
 		Short: "Create a cluster",
-		Run: func(_ *cobra.Command, args []string) {
-			if err := doCreateCluster(p, cfg, ng, cmdutils.GetNameArg(args)); err != nil {
+		Run: func(cmd *cobra.Command, args []string) {
+			if err := doCreateCluster(p, cfg, ng, cmdutils.GetNameArg(args), cmd); err != nil {
 				logger.Critical("%s\n", err.Error())
 				os.Exit(1)
 			}
@@ -102,7 +102,7 @@ func createClusterCmd(g *cmdutils.Grouping) *cobra.Command {
 	return cmd
 }
 
-func doCreateCluster(p *api.ProviderConfig, cfg *api.ClusterConfig, ng *api.NodeGroup, nameArg string) error {
+func doCreateCluster(p *api.ProviderConfig, cfg *api.ClusterConfig, ng *api.NodeGroup, nameArg string, cmd *cobra.Command) error {
 	meta := cfg.Metadata
 	ctl := eks.New(p, cfg)
 
@@ -119,6 +119,55 @@ func doCreateCluster(p *api.ProviderConfig, cfg *api.ClusterConfig, ng *api.Node
 		obj, err := runtime.Decode(scheme.Codecs.UniversalDeserializer(), data)
 		if err != nil {
 			return err
+		}
+
+		cfg = obj.(*api.ClusterConfig)
+
+		// config
+		incompatibleFlags := []string{
+			"name",                    // REQUIRED
+			"tags",                    //
+			"zones",                   //
+			"version",                 // api.LatestVersion
+			"region",                  // REQUIRED
+			"nodes",                   // api.DefaultNodeCount
+			"nodes-min",               // 0
+			"nodes-max",               // 0
+			"node-type",               // defaultNodeType
+			"node-volume-size",        // 0
+			"max-pods-per-node",       // 0
+			"node-ami",                // ami.ResolverStatic
+			"node-ami-family",         // ami.ImageFamilyAmazonLinux2
+			"ssh-access",              // false
+			"ssh-public-key",          // defaultSSHPublicKey
+			"node-private-networking", // false
+			"asg-access",              // false
+			"external-dns-access",     // false
+			"full-ecr-access",         // false
+			"storage-class",           // true
+			"vpc-private-subnets",     //
+			"vpc-public-subnets",      //
+			"vpc-cidr",                // api.DefaultCIDR().IPNet
+		}
+
+		for _, f := range incompatibleFlags {
+			if cmd.Flag(f).Changed {
+				return fmt.Errorf("cannot use --%s when --config-file/-f is set", f)
+			}
+		}
+
+		if cfg.Metadata.Version == "" {
+			cfg.Metadata.Version = api.LatestVersion
+		} else {
+			validVersion := false
+			for _, v := range api.SupportedVersions() {
+				if cfg.Metadata.Version == v {
+					validVersion = true
+				}
+			}
+			if !validVersion {
+				return fmt.Errorf("invalid version, supported values: %s", strings.Join(api.SupportedVersions(), ","))
+			}
 		}
 
 		js, _ := json.MarshalIndent(obj.(*api.ClusterConfig), "", "    ")
