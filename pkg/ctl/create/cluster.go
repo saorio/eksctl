@@ -15,7 +15,7 @@ import (
 	"github.com/weaveworks/eksctl/pkg/ami"
 	_ "github.com/weaveworks/eksctl/pkg/apis/eksctl.io"
 
-	api "github.com/weaveworks/eksctl/pkg/apis/eksctl.io/v1alpha1"
+	api "github.com/weaveworks/eksctl/pkg/apis/eksctl.io/v1alpha3"
 	"github.com/weaveworks/eksctl/pkg/ctl/cmdutils"
 	"github.com/weaveworks/eksctl/pkg/eks"
 	"github.com/weaveworks/eksctl/pkg/kops"
