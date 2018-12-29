@@ -228,5 +228,6 @@ type (
 		PolicyAmazonEC2ContainerRegistryPowerUser bool
 		PolicyAutoScaling                         bool
 		PolicyExternalDNS                         bool
+		PolicyALBIngress                          bool
 	}
 )

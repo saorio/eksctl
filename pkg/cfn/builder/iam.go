@@ -95,7 +95,7 @@ func (n *NodeGroupResourceSet) addResourcesForIAM() {
 	}
 
 	refIR := n.newResource("NodeInstanceRole", &gfn.AWSIAMRole{
-		Path:                     gfn.NewString("/"),
+		Path: gfn.NewString("/"),
 		AssumeRolePolicyDocument: makeAssumeRolePolicyDocument("ec2.amazonaws.com"),
 		ManagedPolicyArns:        makeStringSlice(n.spec.PolicyARNs...),
 	})
@@ -156,6 +156,114 @@ func (n *NodeGroupResourceSet) addResourcesForIAM() {
 			[]string{
 				"route53:ListHostedZones",
 				"route53:ListResourceRecordSets",
+			},
+		)
+	}
+
+	if n.clusterSpec.Addons.WithIAM.PolicyALBIngress {
+		n.rs.attachAllowPolicy("PolicyACMAccess", refIR, "*",
+			[]string{
+        "acm:DescribeCertificate",
+        "acm:ListCertificates",
+        "acm:GetCertificate"
+			},
+		)
+		n.rs.attachAllowPolicy("PolicyEC2Access", refIR, "*",
+			[]string{
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:CreateSecurityGroup",
+        "ec2:CreateTags",
+        "ec2:DeleteTags",
+        "ec2:DeleteSecurityGroup",
+        "ec2:DescribeAccountAttributes",
+        "ec2:DescribeAddresses",
+        "ec2:DescribeInstances",
+        "ec2:DescribeInstanceStatus",
+        "ec2:DescribeInternetGateways",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeTags",
+        "ec2:DescribeVpcs",
+        "ec2:ModifyInstanceAttribute",
+        "ec2:ModifyNetworkInterfaceAttribute",
+        "ec2:RevokeSecurityGroupIngress"
+        "ec2:AuthorizeSecurityGroupIngress",
+        "ec2:CreateSecurityGroup",
+        "ec2:CreateTags",
+        "ec2:DeleteTags",
+        "ec2:DeleteSecurityGroup",
+        "ec2:DescribeAccountAttributes",
+        "ec2:DescribeAddresses",
+        "ec2:DescribeInstances",
+        "ec2:DescribeInstanceStatus",
+        "ec2:DescribeInternetGateways",
+        "ec2:DescribeSecurityGroups",
+        "ec2:DescribeSubnets",
+        "ec2:DescribeTags",
+        "ec2:DescribeVpcs",
+        "ec2:ModifyInstanceAttribute",
+        "ec2:ModifyNetworkInterfaceAttribute",
+        "ec2:RevokeSecurityGroupIngress"
+			},
+		)
+		n.rs.attachAllowPolicy("PolicyLoadbalancerAccess", refIR, "*",
+			[]string{
+				"elasticloadbalancing:AddTags",
+				"elasticloadbalancing:CreateListener",
+				"elasticloadbalancing:CreateLoadBalancer",
+				"elasticloadbalancing:CreateRule",
+				"elasticloadbalancing:CreateTargetGroup",
+				"elasticloadbalancing:DeleteListener",
+				"elasticloadbalancing:DeleteLoadBalancer",
+				"elasticloadbalancing:DeleteRule",
+				"elasticloadbalancing:DeleteTargetGroup",
+				"elasticloadbalancing:DeregisterTargets",
+				"elasticloadbalancing:DescribeListeners",
+				"elasticloadbalancing:DescribeLoadBalancers",
+				"elasticloadbalancing:DescribeLoadBalancerAttributes",
+				"elasticloadbalancing:DescribeRules",
+				"elasticloadbalancing:DescribeSSLPolicies",
+				"elasticloadbalancing:DescribeTags",
+				"elasticloadbalancing:DescribeTargetGroups",
+				"elasticloadbalancing:DescribeTargetGroupAttributes",
+				"elasticloadbalancing:DescribeTargetHealth",
+				"elasticloadbalancing:ModifyListener",
+				"elasticloadbalancing:ModifyLoadBalancerAttributes",
+				"elasticloadbalancing:ModifyRule",
+				"elasticloadbalancing:ModifyTargetGroup",
+				"elasticloadbalancing:ModifyTargetGroupAttributes",
+				"elasticloadbalancing:RegisterTargets",
+				"elasticloadbalancing:RemoveTags",
+				"elasticloadbalancing:SetIpAddressType",
+				"elasticloadbalancing:SetSecurityGroups",
+				"elasticloadbalancing:SetSubnets",
+				"elasticloadbalancing:SetWebACL"
+	    },
+		)
+		n.rs.attachAllowPolicy("PolicyIAMAccess", refIR, "*",
+			[]string{
+				"iam:CreateServiceLinkedRole",
+				"iam:GetServerCertificate",
+				"iam:ListServerCertificates"
+			},
+		)
+		n.rs.attachAllowPolicy("PolicyWAFAccess", refIR, "*",
+			[]string{
+				"waf-regional:GetWebACLForResource",
+				"waf-regional:GetWebACL",
+				"waf-regional:AssociateWebACL",
+				"waf-regional:DisassociateWebACL"
+			},
+		)
+		n.rs.attachAllowPolicy("PolicyTagAccess", refIR, "*",
+			[]string{
+				"tag:GetResources",
+				"tag:TagResources"
+			},
+		)
+		n.rs.attachAllowPolicy("PolicyWAFAccess", refIR, "*",
+			[]string{
+				"waf:GetWebACL"
 			},
 		)
 	}
