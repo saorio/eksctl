@@ -163,47 +163,47 @@ func (n *NodeGroupResourceSet) addResourcesForIAM() {
 	if n.clusterSpec.Addons.WithIAM.PolicyALBIngress {
 		n.rs.attachAllowPolicy("PolicyACMAccess", refIR, "*",
 			[]string{
-        "acm:DescribeCertificate",
-        "acm:ListCertificates",
-        "acm:GetCertificate"
+				"acm:DescribeCertificate",
+				"acm:ListCertificates",
+				"acm:GetCertificate",
 			},
 		)
 		n.rs.attachAllowPolicy("PolicyEC2Access", refIR, "*",
 			[]string{
-        "ec2:AuthorizeSecurityGroupIngress",
-        "ec2:CreateSecurityGroup",
-        "ec2:CreateTags",
-        "ec2:DeleteTags",
-        "ec2:DeleteSecurityGroup",
-        "ec2:DescribeAccountAttributes",
-        "ec2:DescribeAddresses",
-        "ec2:DescribeInstances",
-        "ec2:DescribeInstanceStatus",
-        "ec2:DescribeInternetGateways",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeTags",
-        "ec2:DescribeVpcs",
-        "ec2:ModifyInstanceAttribute",
-        "ec2:ModifyNetworkInterfaceAttribute",
-        "ec2:RevokeSecurityGroupIngress"
-        "ec2:AuthorizeSecurityGroupIngress",
-        "ec2:CreateSecurityGroup",
-        "ec2:CreateTags",
-        "ec2:DeleteTags",
-        "ec2:DeleteSecurityGroup",
-        "ec2:DescribeAccountAttributes",
-        "ec2:DescribeAddresses",
-        "ec2:DescribeInstances",
-        "ec2:DescribeInstanceStatus",
-        "ec2:DescribeInternetGateways",
-        "ec2:DescribeSecurityGroups",
-        "ec2:DescribeSubnets",
-        "ec2:DescribeTags",
-        "ec2:DescribeVpcs",
-        "ec2:ModifyInstanceAttribute",
-        "ec2:ModifyNetworkInterfaceAttribute",
-        "ec2:RevokeSecurityGroupIngress"
+				"ec2:AuthorizeSecurityGroupIngress",
+				"ec2:CreateSecurityGroup",
+				"ec2:CreateTags",
+				"ec2:DeleteTags",
+				"ec2:DeleteSecurityGroup",
+				"ec2:DescribeAccountAttributes",
+				"ec2:DescribeAddresses",
+				"ec2:DescribeInstances",
+				"ec2:DescribeInstanceStatus",
+				"ec2:DescribeInternetGateways",
+				"ec2:DescribeSecurityGroups",
+				"ec2:DescribeSubnets",
+				"ec2:DescribeTags",
+				"ec2:DescribeVpcs",
+				"ec2:ModifyInstanceAttribute",
+				"ec2:ModifyNetworkInterfaceAttribute",
+				"ec2:RevokeSecurityGroupIngress",
+				"ec2:AuthorizeSecurityGroupIngress",
+				"ec2:CreateSecurityGroup",
+				"ec2:CreateTags",
+				"ec2:DeleteTags",
+				"ec2:DeleteSecurityGroup",
+				"ec2:DescribeAccountAttributes",
+				"ec2:DescribeAddresses",
+				"ec2:DescribeInstances",
+				"ec2:DescribeInstanceStatus",
+				"ec2:DescribeInternetGateways",
+				"ec2:DescribeSecurityGroups",
+				"ec2:DescribeSubnets",
+				"ec2:DescribeTags",
+				"ec2:DescribeVpcs",
+				"ec2:ModifyInstanceAttribute",
+				"ec2:ModifyNetworkInterfaceAttribute",
+				"ec2:RevokeSecurityGroupIngress",
 			},
 		)
 		n.rs.attachAllowPolicy("PolicyLoadbalancerAccess", refIR, "*",
@@ -237,14 +237,14 @@ func (n *NodeGroupResourceSet) addResourcesForIAM() {
 				"elasticloadbalancing:SetIpAddressType",
 				"elasticloadbalancing:SetSecurityGroups",
 				"elasticloadbalancing:SetSubnets",
-				"elasticloadbalancing:SetWebACL"
-	    },
+				"elasticloadbalancing:SetWebACL",
+			},
 		)
 		n.rs.attachAllowPolicy("PolicyIAMAccess", refIR, "*",
 			[]string{
 				"iam:CreateServiceLinkedRole",
 				"iam:GetServerCertificate",
-				"iam:ListServerCertificates"
+				"iam:ListServerCertificates",
 			},
 		)
 		n.rs.attachAllowPolicy("PolicyWAFAccess", refIR, "*",
@@ -252,18 +252,18 @@ func (n *NodeGroupResourceSet) addResourcesForIAM() {
 				"waf-regional:GetWebACLForResource",
 				"waf-regional:GetWebACL",
 				"waf-regional:AssociateWebACL",
-				"waf-regional:DisassociateWebACL"
+				"waf-regional:DisassociateWebACL",
 			},
 		)
 		n.rs.attachAllowPolicy("PolicyTagAccess", refIR, "*",
 			[]string{
 				"tag:GetResources",
-				"tag:TagResources"
+				"tag:TagResources",
 			},
 		)
 		n.rs.attachAllowPolicy("PolicyWAFAccess", refIR, "*",
 			[]string{
-				"waf:GetWebACL"
+				"waf:GetWebACL",
 			},
 		)
 	}
